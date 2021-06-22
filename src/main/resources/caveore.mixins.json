@@ -4,9 +4,9 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "caveore.refmap.json",
   "mixins": [
+    "OreMixin"
   ],
   "client": [
-    "OreMixin"
   ],
   "injectors": {
     "defaultRequire": 1
