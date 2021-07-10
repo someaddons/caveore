@@ -10,6 +10,7 @@ public class CommonConfiguration
 {
     public final ForgeConfigSpec.ConfigValue<List<? extends String>> caveblocks;
     public final ForgeConfigSpec.ConfigValue<List<? extends String>> excludedOres;
+    public final ForgeConfigSpec.ConfigValue<Integer>                spawnchance;
 
     protected CommonConfiguration(final ForgeConfigSpec.Builder builder)
     {
@@ -22,6 +23,9 @@ public class CommonConfiguration
 
         builder.comment("List of excluded ores beeing affected, these are mod-specific. : e.g. format :  [\"mod:orename\", \"minecraft:iron_ore\"]");
         excludedOres = builder.defineList("excludedOres", Collections.emptyList(), e -> e instanceof String && ((String) e).contains(":"));
+
+        builder.comment("Chance for an ore vein to appear, reduced below 100% to reduce spawn rates.");
+        spawnchance = builder.defineInRange("spawnchance", 100, 1, 100);
 
         // Escapes the current category level
         builder.pop();

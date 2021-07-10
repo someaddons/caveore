@@ -13,6 +13,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Random;
+
 @Mod(CaveOre.MODID)
 public class CaveOre
 {
@@ -20,6 +22,7 @@ public class CaveOre
 
     private static final Logger        LOGGER = LogManager.getLogger();
     public static        Configuration config;
+    public static        Random        rand   = new Random();
 
     public CaveOre()
     {

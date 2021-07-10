@@ -16,6 +16,7 @@ public class ConfigValues
 {
     public static Set<ResourceLocation> allowedBlocks  = new HashSet<>();
     public static Set<ResourceLocation> excludedBlocks = new HashSet<>();
+    public static int                   oreChance      = 100;
 
     public static void init()
     {
@@ -30,6 +31,8 @@ public class ConfigValues
         {
             excludedBlocks.add(getResourceLocation(data));
         }
+
+        oreChance = CaveOre.config.getCommonConfig().spawnchance.get();
     }
 
     private static ResourceLocation getResourceLocation(String string) throws ResourceLocationException

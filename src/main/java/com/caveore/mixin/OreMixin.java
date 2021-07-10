@@ -1,5 +1,6 @@
 package com.caveore.mixin;
 
+import com.caveore.CaveOre;
 import com.caveore.config.ConfigValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -51,9 +52,20 @@ public class OreMixin
             {
                 // Check surroundings
                 final BlockState state = iWorld.getBlockState(posI.offset(dir));
-                if (state.isIn(Tags.Blocks.ORES) || ConfigValues.allowedBlocks.contains(state.getBlock().getRegistryName()))
+                if (state.isIn(Tags.Blocks.ORES))
                 {
                     return iWorld.getBlockState(pos);
+                }
+                else if (ConfigValues.allowedBlocks.contains(state.getBlock().getRegistryName()))
+                {
+                    if (CaveOre.rand.nextInt(100) <= ConfigValues.oreChance)
+                    {
+                        return iWorld.getBlockState(pos);
+                    }
+                    else
+                    {
+                        return Blocks.AIR.getDefaultState();
+                    }
                 }
             }
         }
