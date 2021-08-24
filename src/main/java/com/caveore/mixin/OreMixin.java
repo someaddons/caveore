@@ -39,7 +39,9 @@ public class OreMixin
       final int p_207803_18_,
       final int p_207803_19_, final int p_207803_20_, final CallbackInfoReturnable<Boolean> cir)
     {
-        isOreBlock = config.state.isIn(Tags.Blocks.ORES) && !ConfigValues.excludedBlocks.contains(config.state.getBlock().getRegistryName());
+        isOreBlock = config.state.isIn(Tags.Blocks.ORES) &&
+                       (ConfigValues.inverted && ConfigValues.excludedBlocks.contains(config.state.getBlock().getRegistryName())
+                          || !ConfigValues.inverted && !ConfigValues.excludedBlocks.contains(config.state.getBlock().getRegistryName()));
     }
 
     @Redirect(method = "func_207803_a", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/IWorld;getBlockState(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/BlockState;"))
