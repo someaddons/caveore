@@ -2,13 +2,14 @@ package com.caveore.mixin;
 
 import com.caveore.CaveOre;
 import com.caveore.config.ConfigValues;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.gen.feature.OreFeature;
-import net.minecraft.world.gen.feature.OreFeatureConfig;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunkSection;
+import net.minecraft.world.level.levelgen.feature.OreFeature;
+import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
 import net.minecraftforge.common.Tags;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,59 +24,70 @@ public class OreMixin
 {
     private boolean isOreBlock = false;
 
-    @Inject(method = "func_207803_a", at = @At("HEAD"))
+    @Inject(method = "doPlace", at = @At("HEAD"))
     private void ongenerate(
-      final IWorld worldIn,
-      final Random random,
-      final OreFeatureConfig config,
-      final double p_207803_4_,
-      final double p_207803_6_,
-      final double p_207803_8_,
-      final double p_207803_10_,
-      final double p_207803_12_,
-      final double p_207803_14_,
-      final int p_207803_16_,
-      final int p_207803_17_,
-      final int p_207803_18_,
-      final int p_207803_19_, final int p_207803_20_, final CallbackInfoReturnable<Boolean> cir)
+      final WorldGenLevel p_66533_,
+      final Random p_66534_,
+      final OreConfiguration config,
+      final double p_66536_,
+      final double p_66537_,
+      final double p_66538_,
+      final double p_66539_,
+      final double p_66540_,
+      final double p_66541_,
+      final int p_66542_,
+      final int p_66543_,
+      final int p_66544_,
+      final int p_66545_,
+      final int p_66546_, final CallbackInfoReturnable<Boolean> cir)
     {
-        isOreBlock = config.state.isIn(Tags.Blocks.ORES) &&
-                       (ConfigValues.inverted && ConfigValues.excludedBlocks.contains(config.state.getBlock().getRegistryName())
-                          || !ConfigValues.inverted && !ConfigValues.excludedBlocks.contains(config.state.getBlock().getRegistryName()));
+        isOreBlock = config.targetStates.stream().anyMatch(state -> state.state.is(Tags.Blocks.ORES) &&
+                                                                      (ConfigValues.inverted && ConfigValues.excludedBlocks.contains(state.state.getBlock().getRegistryName())
+                                                                         || !ConfigValues.inverted && !ConfigValues.excludedBlocks.contains(state.state.getBlock()
+                                                                        .getRegistryName())));
     }
 
-    @Redirect(method = "func_207803_a", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/IWorld;getBlockState(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/BlockState;"))
-    private BlockState ongetBlockState(final IWorld iWorld, final BlockPos pos)
+    @Redirect(method = "doPlace", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/chunk/LevelChunkSection;getBlockState(III)Lnet/minecraft/world/level/block/state/BlockState;"))
+    private BlockState ongetBlockState(final LevelChunkSection iWorld, final int x, final int y, final int z)
     {
         if (isOreBlock)
         {
-            final BlockPos posI = pos.toImmutable();
+            final BlockPos posI = new BlockPos(x, y, z);
             for (final Direction dir : Direction.values())
             {
                 // Check surroundings
-                final BlockState state = iWorld.getBlockState(posI.offset(dir));
-                if (state.isIn(Tags.Blocks.ORES))
+                final BlockPos offsetPos = posI.relative(dir);
+
+                if (offsetPos.getX() > 15 || offsetPos.getX() < 0
+                      || offsetPos.getY() > 15 || offsetPos.getY() < 0
+                      || offsetPos.getZ() > 15 || offsetPos.getZ() < 0)
                 {
-                    return iWorld.getBlockState(pos);
+                    continue;
+                }
+
+                final BlockState state = iWorld.getBlockState(offsetPos.getX(), offsetPos.getY(), offsetPos.getZ());
+                if (state.is(Tags.Blocks.ORES))
+                {
+                    return iWorld.getBlockState(x, y, z);
                 }
                 else if (ConfigValues.allowedBlocks.contains(state.getBlock().getRegistryName()))
                 {
                     if (CaveOre.rand.nextInt(100) <= ConfigValues.oreChance)
                     {
-                        return iWorld.getBlockState(pos);
+                        return iWorld.getBlockState(x, y, z);
                     }
                     else
                     {
-                        return Blocks.AIR.getDefaultState();
+                        return Blocks.AIR.defaultBlockState();
                     }
                 }
             }
         }
         else
         {
-            return iWorld.getBlockState(pos);
+            return iWorld.getBlockState(x, y, z);
         }
 
-        return Blocks.AIR.getDefaultState();
+        return Blocks.AIR.defaultBlockState();
     }
 }
