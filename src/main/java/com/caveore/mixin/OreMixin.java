@@ -90,4 +90,10 @@ public class OreMixin
 
         return Blocks.AIR.defaultBlockState();
     }
+
+    @Inject(method = "shouldSkipAirCheck", at = @At(value = "INVOKE", target = "Ljava/util/Random;nextFloat()F"), cancellable = true)
+    private static void on(final Random rand, final float chance, final CallbackInfoReturnable<Boolean> cir)
+    {
+        cir.setReturnValue(rand.nextFloat() >= chance * ConfigValues.airChance);
+    }
 }

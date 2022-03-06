@@ -18,9 +18,10 @@ public class CaveOre
 {
     public static final String MODID = "caveore";
 
-    private static final Logger        LOGGER = LogManager.getLogger();
+    public static        float         oreChance = 1.0f;
+    private static final Logger        LOGGER    = LogManager.getLogger();
     public static        Configuration config;
-    public static        Random        rand   = new Random();
+    public static        Random        rand      = new Random();
 
     public CaveOre()
     {

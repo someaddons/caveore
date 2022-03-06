@@ -18,6 +18,7 @@ public class ConfigValues
     public static Set<ResourceLocation> excludedBlocks = new HashSet<>();
     public static int                   oreChance      = 100;
     public static boolean               inverted       = false;
+    public static float                 airChance      = 1.0f;
 
     public static void init()
     {
@@ -35,6 +36,7 @@ public class ConfigValues
 
         oreChance = CaveOre.config.getCommonConfig().spawnchance.get();
         inverted = CaveOre.config.getCommonConfig().inverted.get();
+        airChance = (float) (1f / CaveOre.config.getCommonConfig().airChance.get());
     }
 
     private static ResourceLocation getResourceLocation(String string) throws ResourceLocationException
