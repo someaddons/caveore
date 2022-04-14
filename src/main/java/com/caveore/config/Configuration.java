@@ -1,16 +1,23 @@
 package com.caveore.config;
 
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.config.ModConfig;
-import org.apache.commons.lang3.tuple.Pair;
+import com.caveore.CaveOre;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import net.fabricmc.loader.api.FabricLoader;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class Configuration
 {
     /**
      * Loaded everywhere, not synced
      */
-    private final CommonConfiguration commonConfig;
+    private final CommonConfiguration commonConfig = new CommonConfiguration();
 
     /**
      * Loaded clientside, not synced
@@ -22,10 +29,57 @@ public class Configuration
      */
     public Configuration()
     {
-        final Pair<CommonConfiguration, ForgeConfigSpec> com = new ForgeConfigSpec.Builder().configure(CommonConfiguration::new);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, com.getRight());
+    }
 
-        commonConfig = com.getLeft();
+    final Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+
+    public void load()
+    {
+        final Path configPath = FabricLoader.getInstance().getConfigDir().normalize().resolve(CaveOre.MODID + ".json");
+        final File config = configPath.toFile();
+
+        if (!config.exists())
+        {
+            CaveOre.LOGGER.warn("Config for memory settings not found, recreating default");
+            try
+            {
+                final BufferedWriter writer = Files.newBufferedWriter(configPath);
+                gson.toJson(commonConfig.serialize(), JsonObject.class, writer);
+                writer.close();
+            }
+            catch (IOException e)
+            {
+                CaveOre.LOGGER.error("Could not write config to:" + configPath, e);
+            }
+        }
+        else
+        {
+            try
+            {
+                commonConfig.deserialize(gson.fromJson(Files.newBufferedReader(configPath), JsonObject.class));
+            }
+            catch (IOException e)
+            {
+                CaveOre.LOGGER.error("Could not read config from:" + configPath, e);
+            }
+        }
+
+        ConfigValues.init();
+    }
+
+    public void save()
+    {
+        final Path configPath = FabricLoader.getInstance().getConfigDir().normalize().resolve(CaveOre.MODID + ".json");
+        try
+        {
+            final BufferedWriter writer = Files.newBufferedWriter(configPath);
+            gson.toJson(commonConfig.serialize(), JsonObject.class, writer);
+            writer.close();
+        }
+        catch (IOException e)
+        {
+            CaveOre.LOGGER.error("Could not write config to:" + configPath, e);
+        }
     }
 
     public CommonConfiguration getCommonConfig()

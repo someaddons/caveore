@@ -1,39 +1,43 @@
 package com.caveore;
 
-import com.caveore.config.ConfigValues;
 import com.caveore.config.Configuration;
-import com.caveore.event.ModEventHandler;
-import net.minecraftforge.fml.IExtensionPoint;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.fabricmc.api.ModInitializer;
+import net.minecraft.block.BlockState;
+import net.minecraft.tag.BlockTags;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Random;
 
-@Mod(CaveOre.MODID)
-public class CaveOre
+public class CaveOre implements ModInitializer
 {
     public static final String MODID = "caveore";
 
-    public static        float         oreChance = 1.0f;
-    private static final Logger        LOGGER    = LogManager.getLogger();
-    public static        Configuration config;
-    public static        Random        rand      = new Random();
+    public static final Logger        LOGGER = LogManager.getLogger();
+    public static       Configuration config;
+    public static       Random        rand   = new Random();
 
     public CaveOre()
     {
-        ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> "", (c, b) -> true));
         config = new Configuration();
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-        Mod.EventBusSubscriber.Bus.MOD.bus().get().register(ModEventHandler.class);
     }
 
-    private void setup(final FMLCommonSetupEvent event)
+    @Override
+    public void onInitialize()
     {
-        ConfigValues.init();
         LOGGER.info("CaveOre initialized");
+        config.load();
+    }
+
+    public static boolean isOre(final BlockState block)
+    {
+        return block.isIn(BlockTags.COAL_ORES)
+                 || block.isIn(BlockTags.COPPER_ORES)
+                 || block.isIn(BlockTags.DIAMOND_ORES)
+                 || block.isIn(BlockTags.EMERALD_ORES)
+                 || block.isIn(BlockTags.GOLD_ORES)
+                 || block.isIn(BlockTags.IRON_ORES)
+                 || block.isIn(BlockTags.LAPIS_ORES)
+                 || block.isIn(BlockTags.REDSTONE_ORES);
     }
 }
