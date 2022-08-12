@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "caveore",
+  "version": "${version}",
+
+  "name": "Cave Spelunking",
+  "description": "Makes ores only spawn in caves",
+  "authors": [
+    "Someaddons"
+  ],
+  "contact": {
+    "homepage": "",
+    "sources": ""
+  },
+
+  "license": "ARR",
+  "icon": "assets/modid/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.caveore.CaveOre"
+    ]
+  },
+  "mixins": [
+    "caveore.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.11.3",
+    "fabric": "*",
+    "minecraft": "1.19.x",
+    "java": ">=17"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}

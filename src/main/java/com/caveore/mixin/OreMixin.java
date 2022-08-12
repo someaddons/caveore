@@ -16,8 +16,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Random;
-
 @Mixin(OreFeature.class)
 public class OreMixin
 {
@@ -82,9 +80,12 @@ public class OreMixin
         return Blocks.AIR.getDefaultState();
     }
 
-    @Inject(method = "shouldNotDiscard", at = @At(value = "INVOKE", target = "Ljava/util/Random;nextFloat()F"), cancellable = true)
-    private static void on(final Random rand, final float chance, final CallbackInfoReturnable<Boolean> cir)
+    @Inject(method = "shouldNotDiscard", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/random/Random;nextFloat()F"), cancellable = true)
+    private static void on(
+      final net.minecraft.util.math.random.Random random,
+      final float chance,
+      final CallbackInfoReturnable<Boolean> cir)
     {
-        cir.setReturnValue(rand.nextFloat() >= chance * ConfigValues.airChance);
+        cir.setReturnValue(random.nextFloat() >= chance * ConfigValues.airChance);
     }
 }
