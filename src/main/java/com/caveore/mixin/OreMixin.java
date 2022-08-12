@@ -4,6 +4,7 @@ import com.caveore.CaveOre;
 import com.caveore.config.ConfigValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -11,13 +12,12 @@ import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.levelgen.feature.OreFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.Random;
 
 @Mixin(OreFeature.class)
 public class OreMixin
@@ -26,25 +26,26 @@ public class OreMixin
 
     @Inject(method = "doPlace", at = @At("HEAD"))
     private void ongenerate(
-      final WorldGenLevel p_66533_,
-      final Random p_66534_,
+      final WorldGenLevel p_225172_,
+      final RandomSource p_225173_,
       final OreConfiguration config,
-      final double p_66536_,
-      final double p_66537_,
-      final double p_66538_,
-      final double p_66539_,
-      final double p_66540_,
-      final double p_66541_,
-      final int p_66542_,
-      final int p_66543_,
-      final int p_66544_,
-      final int p_66545_,
-      final int p_66546_, final CallbackInfoReturnable<Boolean> cir)
+      final double p_225175_,
+      final double p_225176_,
+      final double p_225177_,
+      final double p_225178_,
+      final double p_225179_,
+      final double p_225180_,
+      final int p_225181_,
+      final int p_225182_,
+      final int p_225183_,
+      final int p_225184_,
+      final int p_225185_, final CallbackInfoReturnable<Boolean> cir)
     {
         isOreBlock = config.targetStates.stream().anyMatch(state -> state.state.is(Tags.Blocks.ORES) &&
-                                                                      (ConfigValues.inverted && ConfigValues.excludedBlocks.contains(state.state.getBlock().getRegistryName())
-                                                                         || !ConfigValues.inverted && !ConfigValues.excludedBlocks.contains(state.state.getBlock()
-                                                                        .getRegistryName())));
+                                                                      (ConfigValues.inverted
+                                                                         && ConfigValues.excludedBlocks.contains(ForgeRegistries.BLOCKS.getKey(state.state.getBlock()))
+                                                                         || !ConfigValues.inverted
+                                                                              && !ConfigValues.excludedBlocks.contains(ForgeRegistries.BLOCKS.getKey(state.state.getBlock()))));
     }
 
     @Redirect(method = "doPlace", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/chunk/LevelChunkSection;getBlockState(III)Lnet/minecraft/world/level/block/state/BlockState;"))
@@ -70,7 +71,7 @@ public class OreMixin
                 {
                     return iWorld.getBlockState(x, y, z);
                 }
-                else if (ConfigValues.allowedBlocks.contains(state.getBlock().getRegistryName()))
+                else if (ConfigValues.allowedBlocks.contains(ForgeRegistries.BLOCKS.getKey(state.getBlock())))
                 {
                     if (CaveOre.rand.nextInt(100) <= ConfigValues.oreChance)
                     {
@@ -91,8 +92,11 @@ public class OreMixin
         return Blocks.AIR.defaultBlockState();
     }
 
-    @Inject(method = "shouldSkipAirCheck", at = @At(value = "INVOKE", target = "Ljava/util/Random;nextFloat()F"), cancellable = true)
-    private static void on(final Random rand, final float chance, final CallbackInfoReturnable<Boolean> cir)
+    @Inject(method = "shouldSkipAirCheck", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/RandomSource;nextFloat()F"), cancellable = true)
+    private static void on(
+      final RandomSource rand,
+      final float chance,
+      final CallbackInfoReturnable<Boolean> cir)
     {
         cir.setReturnValue(rand.nextFloat() >= chance * ConfigValues.airChance);
     }
