@@ -32,8 +32,8 @@ public class CommonConfiguration
         builder.comment("Chance for an ore vein to appear, reduced below 100% to reduce spawn rates.");
         spawnchance = builder.defineInRange("spawnchance", 100, 1, 100);
 
-        builder.comment("Alters chance of ores to not get spawned on air, increase to have more ores spawning on air.");
-        airChance = builder.defineInRange("airChance", 10.0f, 0.1f, 100f);
+        builder.comment("Alters chance of ores to not get spawned on air, decrease to have less ores spawning on air.");
+        airChance = builder.defineInRange("airChance", 100.0f, 0.1f, 100f);
 
         // Escapes the current category level
         builder.pop();
