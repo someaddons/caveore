@@ -3,7 +3,7 @@ package com.caveore;
 import com.caveore.config.Configuration;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.block.BlockState;
-import net.minecraft.tag.BlockTags;
+import net.minecraft.registry.tag.BlockTags;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
