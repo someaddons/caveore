@@ -2,8 +2,8 @@ package com.caveore;
 
 import com.caveore.config.Configuration;
 import net.fabricmc.api.ModInitializer;
-import net.minecraft.block.BlockState;
-import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.level.block.state.BlockState;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -31,13 +31,13 @@ public class CaveOre implements ModInitializer
 
     public static boolean isOre(final BlockState block)
     {
-        return block.isIn(BlockTags.COAL_ORES)
-                 || block.isIn(BlockTags.COPPER_ORES)
-                 || block.isIn(BlockTags.DIAMOND_ORES)
-                 || block.isIn(BlockTags.EMERALD_ORES)
-                 || block.isIn(BlockTags.GOLD_ORES)
-                 || block.isIn(BlockTags.IRON_ORES)
-                 || block.isIn(BlockTags.LAPIS_ORES)
-                 || block.isIn(BlockTags.REDSTONE_ORES);
+        return block.is(BlockTags.COAL_ORES)
+                 || block.is(BlockTags.COPPER_ORES)
+                 || block.is(BlockTags.DIAMOND_ORES)
+                 || block.is(BlockTags.EMERALD_ORES)
+                 || block.is(BlockTags.GOLD_ORES)
+                 || block.is(BlockTags.IRON_ORES)
+                 || block.is(BlockTags.LAPIS_ORES)
+                 || block.is(BlockTags.REDSTONE_ORES);
     }
 }

@@ -40,7 +40,7 @@ public class Configuration
 
         if (!config.exists())
         {
-            CaveOre.LOGGER.warn("Config for memory settings not found, recreating default");
+            CaveOre.LOGGER.warn("Config for cave ore not found, recreating default");
             try
             {
                 final BufferedWriter writer = Files.newBufferedWriter(configPath);
