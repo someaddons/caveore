@@ -1,6 +1,7 @@
 package com.caveore;
 
-import com.caveore.config.Configuration;
+import com.caveore.config.CommonConfiguration;
+import com.cupboard.config.CupboardConfig;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.state.BlockState;
@@ -13,20 +14,18 @@ public class CaveOre implements ModInitializer
 {
     public static final String MODID = "caveore";
 
-    public static final Logger        LOGGER = LogManager.getLogger();
-    public static       Configuration config;
-    public static       Random        rand   = new Random();
+    public static final Logger                              LOGGER = LogManager.getLogger();
+    public static       CupboardConfig<CommonConfiguration> config = new CupboardConfig<>(MODID, new CommonConfiguration());
+    public static       Random                              rand   = new Random();
 
     public CaveOre()
     {
-        config = new Configuration();
     }
 
     @Override
     public void onInitialize()
     {
         LOGGER.info("CaveOre initialized");
-        config.load();
     }
 
     public static boolean isOre(final BlockState block)
