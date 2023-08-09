@@ -1,8 +1,7 @@
 package com.caveore;
 
-import com.caveore.config.ConfigValues;
-import com.caveore.config.Configuration;
-import com.caveore.event.ModEventHandler;
+import com.caveore.config.CommonConfiguration;
+import com.cupboard.config.CupboardConfig;
 import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -18,22 +17,18 @@ public class CaveOre
 {
     public static final String MODID = "caveore";
 
-    public static        float         oreChance = 1.0f;
-    private static final Logger        LOGGER    = LogManager.getLogger();
-    public static        Configuration config;
-    public static        Random        rand      = new Random();
+    private static final Logger                              LOGGER = LogManager.getLogger();
+    public static        CupboardConfig<CommonConfiguration> config = new CupboardConfig<>(MODID, new CommonConfiguration());
+    public static        Random                              rand   = new Random();
 
     public CaveOre()
     {
         ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> "", (c, b) -> true));
-        config = new Configuration();
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-        Mod.EventBusSubscriber.Bus.MOD.bus().get().register(ModEventHandler.class);
     }
 
     private void setup(final FMLCommonSetupEvent event)
     {
-        ConfigValues.init();
         LOGGER.info("CaveOre initialized");
     }
 }

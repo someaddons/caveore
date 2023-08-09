@@ -52,3 +52,9 @@ CaveOre mod prevents ores from spawning not exposed to air/fluids/other ore bloc
     versionRange="[1.19.2,)"
     ordering="NONE"
     side="BOTH"
+[[dependencies.caveore]]
+    modId="cupboard"
+    mandatory=true
+    versionRange="[1.5,)"
+    ordering="NONE"
+    side="BOTH"

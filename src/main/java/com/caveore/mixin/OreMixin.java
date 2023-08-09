@@ -82,6 +82,10 @@ public class OreMixin
                         return Blocks.AIR.defaultBlockState();
                     }
                 }
+                else if (CaveOre.rand.nextInt(100) <= CaveOre.config.getCommonConfig().hiddenOreChance)
+                {
+                    return iWorld.getBlockState(x, y, z);
+                }
             }
         }
         else
@@ -98,6 +102,6 @@ public class OreMixin
       final float chance,
       final CallbackInfoReturnable<Boolean> cir)
     {
-        cir.setReturnValue(rand.nextFloat() >= chance * ConfigValues.airChance);
+        cir.setReturnValue(true);
     }
 }
