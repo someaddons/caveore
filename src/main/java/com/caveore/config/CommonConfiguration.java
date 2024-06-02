@@ -81,6 +81,7 @@ public class CommonConfiguration implements ICommonConfig
 
         inverted = data.get("inverted").getAsJsonObject().get("inverted").getAsBoolean();
         spawnchance = data.get("spawnchance").getAsJsonObject().get("spawnchance").getAsInt();
+        hiddenOreChance = data.get("hiddenOreChance").getAsJsonObject().get("hiddenOreChance").getAsInt();
 
         ConfigValues.parse();
     }
