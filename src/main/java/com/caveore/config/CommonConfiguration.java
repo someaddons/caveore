@@ -14,7 +14,7 @@ public class CommonConfiguration implements ICommonConfig
     public List<String> caveblocks             = Lists.newArrayList("minecraft:air", "minecraft:cave_air", "minecraft:water", "minecraft:lava");
     public List<String> excludedOres           = new ArrayList<>();
     public int          spawnchance            = 100;
-    public int          hiddenOreChance        = 10;
+    public int hiddenOreChance = 1;
     public double       oreVeinDensityModifier = 1.0;
     public boolean      inverted               = false;
 
@@ -45,7 +45,7 @@ public class CommonConfiguration implements ICommonConfig
 
         final JsonObject entry5 = new JsonObject();
         entry5.addProperty("desc:",
-            "Chance for ore block placement to ignore the caveblock list restriction. This controls the amount of ores outside of caves/accessable surfaces. default: 10%, vanilla = 100%");
+            "Chance for ore block placement to ignore the caveblock list restriction. This controls the amount of ores outside of caves/accessable surfaces. default: 1%, vanilla = 100%");
         entry5.addProperty("hiddenOreChance", hiddenOreChance);
         root.add("hiddenOreChance", entry5);
 
