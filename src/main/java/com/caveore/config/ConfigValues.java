@@ -44,7 +44,7 @@ public class ConfigValues
             String[] split = string.split(":");
             if (split.length == 2)
             {
-                return new ResourceLocation(split[0], split[1]);
+                return ResourceLocation.fromNamespaceAndPath(split[0], split[1]);
             }
         }
 
