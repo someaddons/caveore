@@ -6,10 +6,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunkSection;
+import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.OreFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
 import net.neoforged.neoforge.common.Tags;
@@ -24,28 +24,24 @@ public class OreMixin
 {
     private boolean isOreBlock = false;
 
-    @Inject(method = "doPlace", at = @At("HEAD"))
+    @Inject(method = "place", at = @At("HEAD"))
     private void ongenerate(
-      final WorldGenLevel p_225172_,
-      final RandomSource p_225173_,
-      final OreConfiguration config,
-      final double p_225175_,
-      final double p_225176_,
-      final double p_225177_,
-      final double p_225178_,
-      final double p_225179_,
-      final double p_225180_,
-      final int p_225181_,
-      final int p_225182_,
-      final int p_225183_,
-      final int p_225184_,
-      final int p_225185_, final CallbackInfoReturnable<Boolean> cir)
+        final FeaturePlaceContext<OreConfiguration> p_160177_, final CallbackInfoReturnable<Boolean> cir)
     {
-        isOreBlock = config.targetStates.stream().anyMatch(state -> state.state.is(Tags.Blocks.ORES) &&
-                                                                      (ConfigValues.inverted
-                                                                          && ConfigValues.excludedBlocks.contains(BuiltInRegistries.BLOCK.getKey(state.state.getBlock()))
-                                                                         || !ConfigValues.inverted
-                                                                          && !ConfigValues.excludedBlocks.contains(BuiltInRegistries.BLOCK.getKey(state.state.getBlock()))));
+        boolean foundOre = false;
+        for (OreConfiguration.TargetBlockState state : p_160177_.config().targetStates)
+        {
+            if (state.state.is(Tags.Blocks.ORES) &&
+                (ConfigValues.inverted
+                    && ConfigValues.excludedBlocks.contains(BuiltInRegistries.BLOCK.getKey(state.state.getBlock()))
+                    || !ConfigValues.inverted
+                    && !ConfigValues.excludedBlocks.contains(BuiltInRegistries.BLOCK.getKey(state.state.getBlock()))))
+            {
+                foundOre = true;
+                break;
+            }
+        }
+        isOreBlock = foundOre;
     }
 
     @Redirect(method = "doPlace", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/chunk/LevelChunkSection;getBlockState(III)Lnet/minecraft/world/level/block/state/BlockState;"))
@@ -53,6 +49,11 @@ public class OreMixin
     {
         if (isOreBlock)
         {
+            if (CaveOre.rand.nextInt(100) > ConfigValues.oreChance)
+            {
+                return Blocks.AIR.defaultBlockState();
+            }
+
             final BlockPos posI = new BlockPos(x, y, z);
             for (final Direction dir : Direction.values())
             {
@@ -60,8 +61,8 @@ public class OreMixin
                 final BlockPos offsetPos = posI.relative(dir);
 
                 if (offsetPos.getX() > 15 || offsetPos.getX() < 0
-                      || offsetPos.getY() > 15 || offsetPos.getY() < 0
-                      || offsetPos.getZ() > 15 || offsetPos.getZ() < 0)
+                    || offsetPos.getY() > 15 || offsetPos.getY() < 0
+                    || offsetPos.getZ() > 15 || offsetPos.getZ() < 0)
                 {
                     continue;
                 }
@@ -73,17 +74,6 @@ public class OreMixin
                 }
                 else if (ConfigValues.allowedBlocks.contains(BuiltInRegistries.BLOCK.getKey(state.getBlock())))
                 {
-                    if (CaveOre.rand.nextInt(100) <= ConfigValues.oreChance)
-                    {
-                        return iWorld.getBlockState(x, y, z);
-                    }
-                    else
-                    {
-                        return Blocks.AIR.defaultBlockState();
-                    }
-                }
-                else if (CaveOre.rand.nextInt(100) <= CaveOre.config.getCommonConfig().hiddenOreChance)
-                {
                     return iWorld.getBlockState(x, y, z);
                 }
             }
@@ -93,14 +83,18 @@ public class OreMixin
             return iWorld.getBlockState(x, y, z);
         }
 
+        if (CaveOre.rand.nextInt(100) < CaveOre.config.getCommonConfig().hiddenOreChance)
+        {
+            return iWorld.getBlockState(x, y, z);
+        }
         return Blocks.AIR.defaultBlockState();
     }
 
     @Inject(method = "shouldSkipAirCheck", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/RandomSource;nextFloat()F"), cancellable = true)
     private static void on(
-      final RandomSource rand,
-      final float chance,
-      final CallbackInfoReturnable<Boolean> cir)
+        final RandomSource rand,
+        final float chance,
+        final CallbackInfoReturnable<Boolean> cir)
     {
         cir.setReturnValue(true);
     }
