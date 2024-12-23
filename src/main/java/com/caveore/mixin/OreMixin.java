@@ -4,6 +4,7 @@ import com.caveore.CaveOre;
 import com.caveore.config.ConfigValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
@@ -12,7 +13,6 @@ import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.levelgen.feature.OreFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
 import net.minecraftforge.common.Tags;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -43,9 +43,9 @@ public class OreMixin
     {
         isOreBlock = config.targetStates.stream().anyMatch(state -> state.state.is(Tags.Blocks.ORES) &&
                                                                       (ConfigValues.inverted
-                                                                         && ConfigValues.excludedBlocks.contains(ForgeRegistries.BLOCKS.getKey(state.state.getBlock()))
+                                                                          && ConfigValues.excludedBlocks.contains(BuiltInRegistries.BLOCK.getKey(state.state.getBlock()))
                                                                          || !ConfigValues.inverted
-                                                                              && !ConfigValues.excludedBlocks.contains(ForgeRegistries.BLOCKS.getKey(state.state.getBlock()))));
+                                                                          && !ConfigValues.excludedBlocks.contains(BuiltInRegistries.BLOCK.getKey(state.state.getBlock()))));
     }
 
     @Redirect(method = "doPlace", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/chunk/LevelChunkSection;getBlockState(III)Lnet/minecraft/world/level/block/state/BlockState;"))
@@ -71,7 +71,7 @@ public class OreMixin
                 {
                     return iWorld.getBlockState(x, y, z);
                 }
-                else if (ConfigValues.allowedBlocks.contains(ForgeRegistries.BLOCKS.getKey(state.getBlock())))
+                else if (ConfigValues.allowedBlocks.contains(BuiltInRegistries.BLOCK.getKey(state.getBlock())))
                 {
                     if (CaveOre.rand.nextInt(100) <= ConfigValues.oreChance)
                     {
