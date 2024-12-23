@@ -36,6 +36,8 @@ dependencies {
     mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    modImplementation("curse.maven:cupboard-326652:5477517")
+
 }
 
 loom {
@@ -43,11 +45,10 @@ loom {
         client {
             programArg '--username=Dev'
             programArg '--uuid=c2f44529-eb64-40d0-b970-5ad748c7b377'
-            //vmArg '-Dmixin.debug=true'
+            vmArg '-Dmixin.debug=true'
         }
         server {
             runDir = "runserver"
-            vmArg '-Dmixin.debug=true'
         }
     }
 }

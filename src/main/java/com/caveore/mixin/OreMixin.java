@@ -42,9 +42,9 @@ public class OreMixin
     {
         isOreBlock = config.targetStates.stream().anyMatch(state -> CaveOre.isOre(state.state) &&
                                                                       (ConfigValues.inverted
-                                                                         && ConfigValues.excludedBlocks.contains(BuiltInRegistries.BLOCK.getKey(state.state.getBlock()))
+                                                                          && ConfigValues.excludedBlocks.contains(BuiltInRegistries.BLOCK.getKey(state.state.getBlock()))
                                                                          || !ConfigValues.inverted
-                                                                              && !ConfigValues.excludedBlocks.contains(BuiltInRegistries.BLOCK.getKey(state.state.getBlock()))));
+                                                                          && !ConfigValues.excludedBlocks.contains(BuiltInRegistries.BLOCK.getKey(state.state.getBlock()))));
     }
 
     @Redirect(method = "doPlace", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/chunk/LevelChunkSection;getBlockState(III)Lnet/minecraft/world/level/block/state/BlockState;"))
