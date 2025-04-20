@@ -27,20 +27,17 @@ public class OreMixin
     private void ongenerate(
         final FeaturePlaceContext<OreConfiguration> p_160177_, final CallbackInfoReturnable<Boolean> cir)
     {
-        boolean foundOre = false;
         for (OreConfiguration.TargetBlockState state : p_160177_.config().targetStates)
         {
             if (CaveOre.isOre(state.state) &&
-                (ConfigValues.inverted
-                    && ConfigValues.excludedBlocks.contains(BuiltInRegistries.BLOCK.getKey(state.state.getBlock()))
-                    || !ConfigValues.inverted
-                    && !ConfigValues.excludedBlocks.contains(BuiltInRegistries.BLOCK.getKey(state.state.getBlock()))))
+                ((ConfigValues.inverted && ConfigValues.excludedBlocks.contains(BuiltInRegistries.BLOCK.getKey(state.state.getBlock())))
+                    ||
+                    (!ConfigValues.inverted && !ConfigValues.excludedBlocks.contains(BuiltInRegistries.BLOCK.getKey(state.state.getBlock())))))
             {
-                foundOre = true;
+                isOreBlock = true;
                 break;
             }
         }
-        isOreBlock = foundOre;
     }
 
     @Redirect(method = "doPlace", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/chunk/LevelChunkSection;getBlockState(III)Lnet/minecraft/world/level/block/state/BlockState;"))
@@ -48,11 +45,6 @@ public class OreMixin
     {
         if (isOreBlock)
         {
-            if (CaveOre.rand.nextInt(100) > ConfigValues.oreChance)
-            {
-                return Blocks.AIR.defaultBlockState();
-            }
-
             final BlockPos posI = new BlockPos(x, y, z);
             for (final Direction dir : Direction.values())
             {
@@ -73,8 +65,20 @@ public class OreMixin
                 }
                 else if (ConfigValues.allowedBlocks.contains(BuiltInRegistries.BLOCK.getKey(state.getBlock())))
                 {
-                    return iWorld.getBlockState(x, y, z);
+                    if (CaveOre.rand.nextInt(100) <= ConfigValues.oreChance)
+                    {
+                        return iWorld.getBlockState(x, y, z);
+                    }
+                    else
+                    {
+                        return Blocks.AIR.defaultBlockState();
+                    }
                 }
+            }
+
+            if (CaveOre.rand.nextInt(100) < CaveOre.config.getCommonConfig().hiddenOreChance)
+            {
+                return iWorld.getBlockState(x, y, z);
             }
         }
         else
@@ -82,10 +86,6 @@ public class OreMixin
             return iWorld.getBlockState(x, y, z);
         }
 
-        if (CaveOre.rand.nextInt(100) < CaveOre.config.getCommonConfig().hiddenOreChance)
-        {
-            return iWorld.getBlockState(x, y, z);
-        }
         return Blocks.AIR.defaultBlockState();
     }
 
