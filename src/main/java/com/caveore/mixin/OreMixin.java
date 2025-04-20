@@ -26,26 +26,32 @@ public class OreMixin
 
     @Inject(method = "doPlace", at = @At("HEAD"))
     private void ongenerate(
-      final WorldGenLevel p_225172_,
-      final RandomSource p_225173_,
-      final OreConfiguration config,
-      final double p_225175_,
-      final double p_225176_,
-      final double p_225177_,
-      final double p_225178_,
-      final double p_225179_,
-      final double p_225180_,
-      final int p_225181_,
-      final int p_225182_,
-      final int p_225183_,
-      final int p_225184_,
-      final int p_225185_, final CallbackInfoReturnable<Boolean> cir)
+        final WorldGenLevel p_225172_,
+        final RandomSource p_225173_,
+        final OreConfiguration config,
+        final double p_225175_,
+        final double p_225176_,
+        final double p_225177_,
+        final double p_225178_,
+        final double p_225179_,
+        final double p_225180_,
+        final int p_225181_,
+        final int p_225182_,
+        final int p_225183_,
+        final int p_225184_,
+        final int p_225185_, final CallbackInfoReturnable<Boolean> cir)
     {
-        isOreBlock = config.targetStates.stream().anyMatch(state -> state.state.is(Tags.Blocks.ORES) &&
-                                                                      (ConfigValues.inverted
-                                                                          && ConfigValues.excludedBlocks.contains(BuiltInRegistries.BLOCK.getKey(state.state.getBlock()))
-                                                                         || !ConfigValues.inverted
-                                                                          && !ConfigValues.excludedBlocks.contains(BuiltInRegistries.BLOCK.getKey(state.state.getBlock()))));
+        for (OreConfiguration.TargetBlockState state : config.targetStates)
+        {
+            if (state.state.is(Tags.Blocks.ORES) &&
+                ((ConfigValues.inverted && ConfigValues.excludedBlocks.contains(BuiltInRegistries.BLOCK.getKey(state.state.getBlock())))
+                    ||
+                    (!ConfigValues.inverted && !ConfigValues.excludedBlocks.contains(BuiltInRegistries.BLOCK.getKey(state.state.getBlock())))))
+            {
+                isOreBlock = true;
+                break;
+            }
+        }
     }
 
     @Redirect(method = "doPlace", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/chunk/LevelChunkSection;getBlockState(III)Lnet/minecraft/world/level/block/state/BlockState;"))
@@ -60,8 +66,8 @@ public class OreMixin
                 final BlockPos offsetPos = posI.relative(dir);
 
                 if (offsetPos.getX() > 15 || offsetPos.getX() < 0
-                      || offsetPos.getY() > 15 || offsetPos.getY() < 0
-                      || offsetPos.getZ() > 15 || offsetPos.getZ() < 0)
+                    || offsetPos.getY() > 15 || offsetPos.getY() < 0
+                    || offsetPos.getZ() > 15 || offsetPos.getZ() < 0)
                 {
                     continue;
                 }
@@ -82,10 +88,11 @@ public class OreMixin
                         return Blocks.AIR.defaultBlockState();
                     }
                 }
-                else if (CaveOre.rand.nextInt(100) <= CaveOre.config.getCommonConfig().hiddenOreChance)
-                {
-                    return iWorld.getBlockState(x, y, z);
-                }
+            }
+
+            if (CaveOre.rand.nextInt(100) < CaveOre.config.getCommonConfig().hiddenOreChance)
+            {
+                return iWorld.getBlockState(x, y, z);
             }
         }
         else
@@ -98,9 +105,9 @@ public class OreMixin
 
     @Inject(method = "shouldSkipAirCheck", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/RandomSource;nextFloat()F"), cancellable = true)
     private static void on(
-      final RandomSource rand,
-      final float chance,
-      final CallbackInfoReturnable<Boolean> cir)
+        final RandomSource rand,
+        final float chance,
+        final CallbackInfoReturnable<Boolean> cir)
     {
         cir.setReturnValue(true);
     }
