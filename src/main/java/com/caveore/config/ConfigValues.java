@@ -1,8 +1,8 @@
 package com.caveore.config;
 
 import com.caveore.CaveOre;
-import net.minecraft.ResourceLocationException;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.IdentifierException;
+import net.minecraft.resources.Identifier;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -14,8 +14,8 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
  */
 public class ConfigValues
 {
-    public static Set<ResourceLocation> allowedBlocks  = new HashSet<>();
-    public static Set<ResourceLocation> excludedBlocks = new HashSet<>();
+    public static Set<Identifier> allowedBlocks  = new HashSet<>();
+    public static Set<Identifier> excludedBlocks = new HashSet<>();
     public static int                   oreChance      = 100;
     public static boolean               inverted       = false;
 
@@ -37,17 +37,17 @@ public class ConfigValues
         inverted = CaveOre.config.getCommonConfig().inverted;
     }
 
-    private static ResourceLocation getResourceLocation(String string) throws ResourceLocationException
+    private static Identifier getResourceLocation(String string) throws IdentifierException
     {
         if (string != null && !string.equals(EMPTY))
         {
             String[] split = string.split(":");
             if (split.length == 2)
             {
-                return ResourceLocation.fromNamespaceAndPath(split[0], split[1]);
+                return Identifier.fromNamespaceAndPath(split[0], split[1]);
             }
         }
 
-        throw new ResourceLocationException("Cannot parse:" + string + " to a valid resource location");
+        throw new IdentifierException("Cannot parse:" + string + " to a valid resource location");
     }
 }
