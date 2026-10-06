@@ -1,4 +1,4 @@
-[curseforge]: [https://www.curseforge.com/minecraft/mc-mods/caveore]
+[curseforge]: https://www.curseforge.com/minecraft/mc-mods/caveore
 
 # Cave Spelunking
 
